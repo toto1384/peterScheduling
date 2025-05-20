@@ -1,0 +1,25 @@
+{
+  "name": "peterscheduling",
+  "version": "1.0.0",
+  "description": "Sync of Acuity and Coreplus",
+  "main": "index.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/toto1384/peterScheduling.git"
+  },
+  "author": "Alex Totolici",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/toto1384/peterScheduling/issues"
+  },
+  "homepage": "https://github.com/toto1384/peterScheduling#readme",
+  "dependencies": {
+    "express": "^5.1.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.8.3"
+  }
+}
