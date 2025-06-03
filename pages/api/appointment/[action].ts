@@ -3,7 +3,6 @@ import { SaveActionObject } from "@/utils/types"
 import { NextApiRequest } from "next"
 import { v4 } from 'uuid'
 
-
 export default async function handler(req: NextApiRequest, res: any) {
 
 
@@ -282,6 +281,8 @@ export default async function handler(req: NextApiRequest, res: any) {
                             ]
                         }
 
+
+
                         console.log('json add', jsonAdd)
 
                         const responseAppointmentAdd = await fetch(endPoint, {
@@ -500,31 +501,30 @@ async function throwSaveError(
 
     const errMessage = `${noLocation ? `No location found with name '${jsonEvent.location}', please create one. ` : ''}${noPractitioner ? `No Practitioner found with name '${jsonEvent.calendar}', please create one. ` : ''}${errorThrown ? `Error thrown ${errorThrown}` : ''}`
 
-    const alreadyInserted = await SaveActionModel.find({ acuityAppointmentId: jsonEvent.id }).limit(1)
-    if (!alreadyInserted?.[0] || retried) {
-        const errorActionObject = {
-            acuityCalendarId: jsonEvent.calendarID,
-            acuityAppointmentId: jsonEvent.id,
-            acuityAppointmentTypeName: jsonEvent.type,
-            acuityAppointmentStartDate: convertAcuityToDate(jsonEvent.datetime),
-            acuityAppointmentTypeId: jsonEvent.appointmentTypeID,
-            acuityClientFullName: `${jsonEvent.firstName} ${jsonEvent.lastName}`,
-            acuityLocationName: jsonEvent.location,
 
-            actionType,
-            status: 'Failure',
+    const errorActionObject = {
+        acuityCalendarId: jsonEvent.calendarID,
+        acuityAppointmentId: jsonEvent.id,
+        acuityAppointmentTypeName: jsonEvent.type,
+        acuityAppointmentStartDate: convertAcuityToDate(jsonEvent.datetime),
+        acuityAppointmentTypeId: jsonEvent.appointmentTypeID,
+        acuityClientFullName: `${jsonEvent.firstName} ${jsonEvent.lastName}`,
+        acuityLocationName: jsonEvent.location,
 
-            errorMessage: errMessage,
-            retried
+        actionType,
+        status: 'Failure',
 
-        } as SaveActionObject
-        console.log("🚀 ~ handler ~ errorActionObject:", errorActionObject)
+        errorMessage: errMessage,
+        retried
 
-        const updatedAction = await SaveActionModel.updateOne({ _id: processingAction._id }, errorActionObject)
+    } as SaveActionObject
+    console.log("🚀 ~ handler ~ errorActionObject:", errorActionObject)
 
-        console.log("🚀 ~ updatedAction:", updatedAction)
+    const updatedAction = await SaveActionModel.updateOne({ _id: processingAction._id }, errorActionObject)
 
-    }
+    console.log("🚀 ~ updatedAction:", updatedAction)
+
+
 
     return errMessage;
 }

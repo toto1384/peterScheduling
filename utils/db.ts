@@ -5,7 +5,9 @@ import { z, ZodTypeAny } from 'zod'
 import { SaveActionObject } from './types';
 import jwt from 'jsonwebtoken';
 import { addMinutes, format, parse, parseISO, toDate } from 'date-fns';
+import { enAU } from "date-fns/locale"
 export const url = 'https://a715-86-124-188-183.ngrok-free.app'
+// export const url = 'http://209.38.87.232'
 export const authAcuity = 'Basic ' + Buffer.from(`${process.env.ACUITY_USER_ID}:${process.env.ACUITY_API_KEY}`).toString('base64')
 export const headersAcuity = { accept: 'application/json', 'Authorization': authAcuity }
 
@@ -27,6 +29,12 @@ export function convertAcuityToCorePlus(acuityDateString: string, add?: { interv
 
     const corePlusDateString = format(acuityDate, "yyyy-MM-dd'T'HH:mm:ssXXX");
     console.log("🚀 ~ convertAcuityToCorePlus ~ corePlusDateString:", acuityDate.getTimezoneOffset(), corePlusDateString)
+
+    console.log('Input acuityDate:', acuityDate);
+    console.log('System timezone:', Intl.DateTimeFormat().resolvedOptions().timeZone);
+    console.log('Date object:', new Date(acuityDate));
+    console.log('Formatted result:', format(new Date(acuityDate), "yyyy-MM-dd'T'HH:mm:ssXXX"));
+
     // // 2. Convert to the CorePlus Timezone (+10:00)
     // const corePlusDate = utcToZonedTime(acuityDate, 'Australia/Sydney'); // Use a specific IANA timezone
 
