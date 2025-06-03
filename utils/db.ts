@@ -6,8 +6,8 @@ import { SaveActionObject } from './types';
 import jwt from 'jsonwebtoken';
 import { addMinutes, format, parse, parseISO, toDate } from 'date-fns';
 import { formatInTimeZone } from "date-fns-tz"
-export const url = 'https://a715-86-124-188-183.ngrok-free.app'
-// export const url = 'http://209.38.87.232'
+// export const url = 'https://a715-86-124-188-183.ngrok-free.app'
+export const url = 'http://209.38.87.232'
 export const authAcuity = 'Basic ' + Buffer.from(`${process.env.ACUITY_USER_ID}:${process.env.ACUITY_API_KEY}`).toString('base64')
 export const headersAcuity = { accept: 'application/json', 'Authorization': authAcuity }
 

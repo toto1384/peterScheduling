@@ -391,9 +391,9 @@ export default async function handler(req: NextApiRequest, res: any) {
 
                 const scheduledActionModel = await SaveActionModel.find({ acuityAppointmentId: req.body.id, actionType: 'appointment.scheduled' }).limit(1)
 
-                const reScheduledActionModel = await SaveActionModel.find({ acuityAppointmentId: req.body.id, actionType: 'appointment.rescheduled', status: 'Success' }).limit(1)
+                // const reScheduledActionModel = await SaveActionModel.find({ acuityAppointmentId: req.body.id, actionType: 'appointment.rescheduled', status: 'Success' }).limit(1)
 
-                if (reScheduledActionModel?.[0]) return res.status(200).json({ message: 'Event already rescheduled' })
+                // if (reScheduledActionModel?.[0]) return res.status(200).json({ message: 'Event already rescheduled' })
 
                 if (scheduledActionModel?.[0].corePlusAppointmentId) {
                     const options = { method: 'GET', headers: headersAcuity };
