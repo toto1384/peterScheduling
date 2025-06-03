@@ -261,28 +261,32 @@ export default async function handler(req: NextApiRequest, res: any) {
                         const method = 'POST'
                         const endPoint = 'https://sandbox.coreplus.com.au/API/Core/v2.1/appointment/'
 
+                        const jsonAdd = {
+                            "startDateTime": convertAcuityToCorePlus(jsonEvent.datetime),
+                            "endDateTime": convertAcuityToCorePlus(jsonEvent.datetime, { interval: 'minutes', num: jsonEvent.duration }),
+                            "practitioner": {
+                                "practitionerId": corePlusPractitionerId
+                            },
+                            "locationId": corePlusLocationId, // from the calendar.location
+                            "appointmentTypeId": corePlusAppointmentTypeId,
+                            "notes": `Price: ${jsonEvent.price} • Paid: ${jsonEvent.paid} \nDate Created: ${jsonEvent.dateCreated} \nNotes: ${jsonEvent.notes}`,
+                            "notifyPractitioner": "true",
+                            "appointmentReminder": {
+                                "isEmailReminderRequired": "false",
+                                "isSmsReminderRequired": "true"
+                            },
+                            "clients": [
+                                {
+                                    "clientId": corePlusClientId
+                                }
+                            ]
+                        }
+
+                        console.log('json add', jsonAdd)
+
                         const responseAppointmentAdd = await fetch(endPoint, {
                             method, headers: { 'Authorization': 'JwToken ' + formJWTCorePlus({ method, endPoint }), 'content-type': 'application/json' },
-                            body: JSON.stringify({
-                                "startDateTime": convertAcuityToCorePlus(jsonEvent.datetime),
-                                "endDateTime": convertAcuityToCorePlus(jsonEvent.datetime, { interval: 'minutes', num: jsonEvent.duration }),
-                                "practitioner": {
-                                    "practitionerId": corePlusPractitionerId
-                                },
-                                "locationId": corePlusLocationId, // from the calendar.location
-                                "appointmentTypeId": corePlusAppointmentTypeId,
-                                "notes": `Price: ${jsonEvent.price} • Paid: ${jsonEvent.paid} \nDate Created: ${jsonEvent.dateCreated} \nNotes: ${jsonEvent.notes}`,
-                                "notifyPractitioner": "true",
-                                "appointmentReminder": {
-                                    "isEmailReminderRequired": "false",
-                                    "isSmsReminderRequired": "true"
-                                },
-                                "clients": [
-                                    {
-                                        "clientId": corePlusClientId
-                                    }
-                                ]
-                            })
+                            body: JSON.stringify(jsonAdd)
                         });
 
                         const jsonAppointmentAdd = await responseAppointmentAdd.json();
@@ -291,6 +295,7 @@ export default async function handler(req: NextApiRequest, res: any) {
 
                         if (jsonAppointmentAdd?.result?.[0]?.reason) {
                             errorThrown = jsonAppointmentAdd?.result?.[0]?.reason;
+                            console.log("got here")
                             const resThrowError = await throwSaveError({ errorThrown, jsonEvent, noLocation, noPractitioner, retried: req.body.retry == true, actionType: 'appointment.scheduled', processingAction: loadingActionModel });
 
                             return res.status(409).json({ success: false, message: resThrowError })
