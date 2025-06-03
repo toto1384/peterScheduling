@@ -36,6 +36,15 @@ export function convertAcuityToCorePlus(acuityDateString: string, add?: { interv
     return corePlusDateString;
 }
 
+export function convertAcuityToDate(acuityDateString: string, add?: { interval: "minutes", num: number }) {
+    // 1. Parse the Acuity Date (important to include the timezone)
+    let acuityDate = parseISO(acuityDateString,);
+
+    if (add && add.interval == 'minutes') acuityDate = addMinutes(acuityDate, add.num)
+
+    return acuityDate;
+}
+
 
 export function formJWTCorePlus({ endPoint, method }: { endPoint: string, method: string }) {
     // API configuration

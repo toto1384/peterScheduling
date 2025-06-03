@@ -1,4 +1,4 @@
-import { convertAcuityToCorePlus, createWebhook, dbConnect, formJWTCorePlus, getSaveActionModel, headersAcuity, listWebhooks, url, VALID_EVENTS } from "@/utils/db"
+import { convertAcuityToCorePlus, convertAcuityToDate, createWebhook, dbConnect, formJWTCorePlus, getSaveActionModel, headersAcuity, listWebhooks, url, VALID_EVENTS } from "@/utils/db"
 import { SaveActionObject } from "@/utils/types"
 import { NextApiRequest } from "next"
 import { v4 } from 'uuid'
@@ -41,7 +41,7 @@ export default async function handler(req: NextApiRequest, res: any) {
                         acuityCalendarId: jsonEvent.calendarID,
                         acuityAppointmentId: jsonEvent.id,
                         acuityAppointmentTypeName: jsonEvent.type,
-                        acuityAppointmentStartDate: convertAcuityToCorePlus(jsonEvent.datetime),
+                        acuityAppointmentStartDate: convertAcuityToDate(jsonEvent.datetime),
                         acuityAppointmentTypeId: jsonEvent.appointmentTypeID,
                         acuityClientFullName: `${jsonEvent.firstName} ${jsonEvent.lastName}`,
                         acuityLocationName: jsonEvent.location,
@@ -299,7 +299,7 @@ export default async function handler(req: NextApiRequest, res: any) {
                             const saveAction = {
                                 acuityCalendarId: jsonEvent.calendarID,
                                 acuityAppointmentId: jsonEvent.id,
-                                acuityAppointmentStartDate: convertAcuityToCorePlus(jsonEvent.datetime),
+                                acuityAppointmentStartDate: convertAcuityToDate(jsonEvent.datetime),
                                 acuityAppointmentTypeName: jsonEvent.type,
                                 acuityAppointmentTypeId: jsonEvent.appointmentTypeID,
                                 acuityClientFullName: `${jsonEvent.firstName} ${jsonEvent.lastName}`,
@@ -402,7 +402,7 @@ export default async function handler(req: NextApiRequest, res: any) {
                         acuityCalendarId: jsonEvent.calendarID,
                         acuityAppointmentId: jsonEvent.id,
                         acuityAppointmentTypeName: jsonEvent.type,
-                        acuityAppointmentStartDate: convertAcuityToCorePlus(jsonEvent.datetime),
+                        acuityAppointmentStartDate: convertAcuityToDate(jsonEvent.datetime),
                         acuityAppointmentTypeId: jsonEvent.appointmentTypeID,
                         acuityClientFullName: `${jsonEvent.firstName} ${jsonEvent.lastName}`,
                         acuityLocationName: jsonEvent.location,
@@ -446,7 +446,7 @@ export default async function handler(req: NextApiRequest, res: any) {
                         const saveAction = {
                             acuityCalendarId: jsonEvent.calendarID,
                             acuityAppointmentId: jsonEvent.id,
-                            acuityAppointmentStartDate: convertAcuityToCorePlus(jsonEvent.datetime),
+                            acuityAppointmentStartDate: convertAcuityToDate(jsonEvent.datetime),
                             acuityAppointmentTypeName: jsonEvent.type,
                             acuityAppointmentTypeId: jsonEvent.appointmentTypeID,
                             acuityClientFullName: `${jsonEvent.firstName} ${jsonEvent.lastName}`,
@@ -501,7 +501,7 @@ async function throwSaveError(
             acuityCalendarId: jsonEvent.calendarID,
             acuityAppointmentId: jsonEvent.id,
             acuityAppointmentTypeName: jsonEvent.type,
-            acuityAppointmentStartDate: convertAcuityToCorePlus(jsonEvent.datetime),
+            acuityAppointmentStartDate: convertAcuityToDate(jsonEvent.datetime),
             acuityAppointmentTypeId: jsonEvent.appointmentTypeID,
             acuityClientFullName: `${jsonEvent.firstName} ${jsonEvent.lastName}`,
             acuityLocationName: jsonEvent.location,
