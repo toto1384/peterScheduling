@@ -145,7 +145,7 @@ export default async function handler(req: NextApiRequest, res: any) {
                         try {
                             // if (!clientSaveActionModel?.[0]) {
 
-                            const clientUrl = 'https://sandbox.coreplus.com.au/API/Core/v2.1/client?Field=phonenumberhome&Field=email'
+                            const clientUrl = `https://sandbox.coreplus.com.au/API/Core/v2.1/client?Field=phonenumberhome&Field=email&email?${encodeURI(jsonEvent.email)}`
                             const clientResult = await fetch(clientUrl, {
                                 headers: {
                                     'Authorization': 'JwToken ' + formJWTCorePlus({ method: "GET", endPoint: clientUrl }),
