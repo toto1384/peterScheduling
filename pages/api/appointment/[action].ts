@@ -66,7 +66,7 @@ export default async function handler(req: NextApiRequest, res: any) {
                     const calendarSaveActionModel = await SaveActionModel.find({ acuityCalendarId: jsonEvent.calendarID, corePlusPractitionerId: { $ne: null } }).limit(1)
                     const appointmentTypeIdSaveActionModel = await SaveActionModel.find({ acuityAppointmentTypeId: jsonEvent.appointmentTypeID, corePlusAppointmentTypeId: { $ne: null } }).limit(1)
                     const locationSaveActionModel = await SaveActionModel.find({ acuityLocationName: jsonEvent.location, corePlusLocationId: { $ne: null } }).limit(1)
-                    const clientSaveActionModel = await SaveActionModel.find({ acuityClientFullName: `${jsonEvent.firstName} ${jsonEvent.lastName}`, corePlusClientId: { $ne: null } }).limit(1)
+                    // const clientSaveActionModel = await SaveActionModel.find({ acuityClientFullName: `${jsonEvent.firstName} ${jsonEvent.lastName}`, corePlusClientId: { $ne: null } }).limit(1)
                     //location first since it's the simplest, then practitioner then app type
                     // you can't create practitioners from the api
 
@@ -143,52 +143,52 @@ export default async function handler(req: NextApiRequest, res: any) {
                         console.log('No errors thrown until now, proceeding to finding/creating the client and the appointment type')
                         //CLIENT WORK
                         try {
-                            if (!clientSaveActionModel?.[0]) {
+                            // if (!clientSaveActionModel?.[0]) {
 
-                                const clientUrl = 'https://sandbox.coreplus.com.au/API/Core/v2.1/client?Field=phonenumberhome&Field=email'
-                                const clientResult = await fetch(clientUrl, {
-                                    headers: {
-                                        'Authorization': 'JwToken ' + formJWTCorePlus({ method: "GET", endPoint: clientUrl }),
-                                        'content-type': 'application/json'
-                                    },
-                                    method: 'GET'
-                                })
+                            const clientUrl = 'https://sandbox.coreplus.com.au/API/Core/v2.1/client?Field=phonenumberhome&Field=email'
+                            const clientResult = await fetch(clientUrl, {
+                                headers: {
+                                    'Authorization': 'JwToken ' + formJWTCorePlus({ method: "GET", endPoint: clientUrl }),
+                                    'content-type': 'application/json'
+                                },
+                                method: 'GET'
+                            })
 
-                                const { clients } = await clientResult.json()
+                            const { clients } = await clientResult.json()
 
-                                console.log("🚀 ~ handler ~ clients:", clients)
+                            console.log("🚀 ~ handler ~ clients:", clients)
 
-                                const foundClient = clients.find((i: any) =>
-                                    (jsonEvent.firstName as string).trim() == (i.firstName as string).trim() &&
-                                    (jsonEvent.lastName as string).trim() == (i.lastName as string).trim() &&
-                                    (jsonEvent.email as string).trim() == (i.email as string).trim() &&
-                                    (jsonEvent.phone as string).trim() == (i.phoneNumberHome as string).trim()
-                                )
+                            const foundClient = clients.find((i: any) =>
+                                (jsonEvent.firstName as string).trim() == (i.firstName as string).trim() &&
+                                (jsonEvent.lastName as string).trim() == (i.lastName as string).trim() &&
+                                (jsonEvent.email as string).trim() == (i.email as string).trim() &&
+                                (jsonEvent.phone as string).trim() == (i.phoneNumberHome as string).trim()
+                            )
 
-                                if (foundClient) {
-                                    console.log("Found Client in Coreplus with the same name")
-                                    corePlusClientId = foundClient.clientId
-                                    // the sync was made and it's gonna persist forever
-                                } else {
-                                    console.log("Not Found Client in Coreplus with the same name, creating one")
-                                    const responseCreateClientCP = await fetch(clientUrl, {
-                                        method: "POST", headers: { 'Authorization': 'JwToken ' + formJWTCorePlus({ method: "POST", endPoint: clientUrl }), 'content-type': 'application/json' },
-                                        body: JSON.stringify({
-                                            "firstName": jsonEvent.firstName,
-                                            "lastName": jsonEvent.lastName,
-                                            "dateOfBirth": "2000-01-01",
-                                            email: jsonEvent.email,
-                                            phoneNumberHome: jsonEvent.phone
-                                        })
-                                    });
+                            if (foundClient) {
+                                console.log("Found Client in Coreplus with the same name")
+                                corePlusClientId = foundClient.clientId
+                                // the sync was made and it's gonna persist forever
+                            } else {
+                                console.log("Not Found Client in Coreplus with the same name, creating one")
+                                const responseCreateClientCP = await fetch(clientUrl, {
+                                    method: "POST", headers: { 'Authorization': 'JwToken ' + formJWTCorePlus({ method: "POST", endPoint: clientUrl }), 'content-type': 'application/json' },
+                                    body: JSON.stringify({
+                                        "firstName": jsonEvent.firstName,
+                                        "lastName": jsonEvent.lastName,
+                                        "dateOfBirth": "2000-01-01",
+                                        email: jsonEvent.email,
+                                        phoneNumberHome: jsonEvent.phone
+                                    })
+                                });
 
-                                    const jsonCreateCalendarCP = await responseCreateClientCP.json()
-                                    console.log("🚀 ~ handler ~ jsonCreateAppointmentTypeCP:", jsonCreateCalendarCP)
-                                    corePlusClientId = jsonCreateCalendarCP.client.clientId
-                                }
+                                const jsonCreateCalendarCP = await responseCreateClientCP.json()
+                                console.log("🚀 ~ handler ~ jsonCreateAppointmentTypeCP:", jsonCreateCalendarCP)
+                                corePlusClientId = jsonCreateCalendarCP.client.clientId
+                            }
 
 
-                            } else corePlusClientId = clientSaveActionModel[0].corePlusClientId
+                            // } else corePlusClientId = clientSaveActionModel[0].corePlusClientId
                         } catch (error) {
                             console.log(`error in finding the Client ${error}`)
                             errorThrown = `${error}`
