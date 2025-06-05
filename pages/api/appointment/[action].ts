@@ -171,13 +171,13 @@ export default async function handler(req: NextApiRequest, res: any) {
                                 // the sync was made and it's gonna persist forever
                             } else {
                                 console.log("Not Found Client in Coreplus with the same name, creating one")
-                                const clientUrlPost = 'https://sandbox.coreplus.com.au/API/Core/v2.1/client'
+                                const clientUrlPost = 'https://sandbox.coreplus.com.au/API/Core/v2.1/client/'
                                 const responseCreateClientCP = await fetch(clientUrlPost, {
                                     method: "POST", headers: { 'Authorization': 'JwToken ' + formJWTCorePlus({ method: "POST", endPoint: clientUrlPost }), 'content-type': 'application/json' },
                                     body: JSON.stringify({
                                         "firstName": jsonEvent.firstName,
                                         "lastName": jsonEvent.lastName,
-                                        "dateOfBirth": "2000-01-01",
+                                        // "dateOfBirth": "2000-01-01",
                                         email: jsonEvent.email,
                                         phoneNumberHome: jsonEvent.phone
                                     })
