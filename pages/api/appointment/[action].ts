@@ -145,7 +145,7 @@ export default async function handler(req: NextApiRequest, res: any) {
                         try {
                             if (!clientSaveActionModel?.[0]) {
 
-                                const clientUrl = 'https://sandbox.coreplus.com.au/API/Core/v2.1/client/'
+                                const clientUrl = 'https://sandbox.coreplus.com.au/API/Core/v2.1/client?Field=phonenumberhome&Field=email'
                                 const clientResult = await fetch(clientUrl, {
                                     headers: {
                                         'Authorization': 'JwToken ' + formJWTCorePlus({ method: "GET", endPoint: clientUrl }),
@@ -156,7 +156,14 @@ export default async function handler(req: NextApiRequest, res: any) {
 
                                 const { clients } = await clientResult.json()
 
-                                const foundClient = clients.find((i: any) => (jsonEvent.firstName as string).trim() == (i.firstName as string).trim() && (jsonEvent.lastName as string).trim() == (i.lastName as string).trim())
+                                console.log("🚀 ~ handler ~ clients:", clients)
+
+                                const foundClient = clients.find((i: any) =>
+                                    (jsonEvent.firstName as string).trim() == (i.firstName as string).trim() &&
+                                    (jsonEvent.lastName as string).trim() == (i.lastName as string).trim() &&
+                                    (jsonEvent.email as string).trim() == (i.email as string).trim() &&
+                                    (jsonEvent.phone as string).trim() == (i.phoneNumberHome as string).trim()
+                                )
 
                                 if (foundClient) {
                                     console.log("Found Client in Coreplus with the same name")
