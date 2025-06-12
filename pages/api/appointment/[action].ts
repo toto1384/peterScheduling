@@ -170,6 +170,8 @@ export default async function handler(req: NextApiRequest, res: any) {
                                 corePlusClientId = foundClient.clientId
                                 // the sync was made and it's gonna persist forever
                             } else {
+                                const lastCypher = Number((jsonEvent.phone as string)?.at(jsonEvent.phone?.length - 1))
+
                                 console.log("Not Found Client in Coreplus with the same name, creating one")
                                 const clientUrlPost = 'https://sandbox.coreplus.com.au/API/Core/v2.1/client/'
                                 const responseCreateClientCP = await fetch(clientUrlPost, {
@@ -177,9 +179,10 @@ export default async function handler(req: NextApiRequest, res: any) {
                                     body: JSON.stringify({
                                         "firstName": jsonEvent.firstName,
                                         "lastName": jsonEvent.lastName,
-                                        // "dateOfBirth": "2000-01-01",
+                                        "dateOfBirth": isNaN(lastCypher) ? "2000-01-01" : `2000-01-0${lastCypher}`,
                                         email: jsonEvent.email,
-                                        phoneNumberHome: jsonEvent.phone
+                                        phoneNumberHome: jsonEvent.phone,
+                                        phoneNumberMobile: jsonEvent.phone,
                                     })
                                 });
 
@@ -277,10 +280,10 @@ export default async function handler(req: NextApiRequest, res: any) {
                             "locationId": corePlusLocationId, // from the calendar.location
                             "appointmentTypeId": corePlusAppointmentTypeId,
                             "notes": `Price: ${jsonEvent.price} • Paid: ${jsonEvent.paid} \nDate Created: ${jsonEvent.dateCreated} \nNotes: ${jsonEvent.notes}`,
-                            "notifyPractitioner": "true",
+                            "notifyPractitioner": true,
                             "appointmentReminder": {
-                                "isEmailReminderRequired": "false",
-                                "isSmsReminderRequired": "true"
+                                "isEmailReminderRequired": false,
+                                "isSmsReminderRequired": true
                             },
                             "clients": [
                                 {
@@ -332,6 +335,8 @@ export default async function handler(req: NextApiRequest, res: any) {
                             } as SaveActionObject
 
                             const updatedAction = await SaveActionModel.updateOne({ _id: loadingActionModel._id }, saveAction)
+
+                            await checkAndDeleteProcessing({ actionType: "appointment.scheduled", appointmentId: jsonEvent.id })
 
                             console.log("🚀 ~ handler ~ updatedAction:", updatedAction)
 
@@ -442,7 +447,7 @@ export default async function handler(req: NextApiRequest, res: any) {
                             "startDateTime": convertAcuityToCorePlus(jsonEvent.datetime),
                             "endDateTime": convertAcuityToCorePlus(jsonEvent.datetime, { interval: 'minutes', num: jsonEvent.duration }),
                             "notes": `Price: ${jsonEvent.price} • Paid: ${jsonEvent.paid} \nDate Created: ${jsonEvent.dateCreated} \nNotes: ${jsonEvent.notes}, Rescheduled`,
-                            "notifyPractitioner": "true",
+                            "notifyPractitioner": true,
 
                         })
                     });
@@ -478,7 +483,7 @@ export default async function handler(req: NextApiRequest, res: any) {
                         } as SaveActionObject
 
                         const updateAction = await SaveActionModel.updateOne({ _id: loadingActionModel._id }, saveAction)
-
+                        await checkAndDeleteProcessing({ actionType: "appointment.rescheduled", appointmentId: jsonEvent.id })
                         console.log("🚀 ~ handler ~ updateAction:", updateAction)
 
                         return res.status(200).json({ success: true, result: updateAction })
@@ -498,6 +503,19 @@ export default async function handler(req: NextApiRequest, res: any) {
     }
 }
 
+async function checkAndDeleteProcessing({ actionType, appointmentId }: { appointmentId: number, actionType: typeof VALID_EVENTS[number] }) {
+    const db = await dbConnect()
+    const SaveActionModel = getSaveActionModel(db)
+
+    if (actionType === 'appointment.rescheduled') {
+        const processing = await SaveActionModel.deleteMany({ status: 'Processing', actionType: { $in: ['appointment.rescheduled', 'appointment.scheduled'] }, acuityAppointmentId: appointmentId })
+        console.log("🚀 ~ checkAndDeleteProcessing ~ processing:", processing)
+    } else if (actionType === 'appointment.scheduled') {
+        const processing = await SaveActionModel.deleteMany({ status: 'Processing', actionType, acuityAppointmentId: appointmentId })
+        console.log("🚀 ~ checkAndDeleteProcessing ~ processing:", processing)
+
+    }
+}
 
 async function throwSaveError(
     { errorThrown, jsonEvent, noLocation, noPractitioner, retried, actionType, processingAction }:
@@ -536,3 +554,6 @@ async function throwSaveError(
 
     return errMessage;
 }
+
+
+
