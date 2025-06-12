@@ -181,7 +181,7 @@ export default async function handler(req: NextApiRequest, res: any) {
                                         "lastName": jsonEvent.lastName,
                                         "dateOfBirth": isNaN(lastCypher) ? "2000-01-01" : `2000-01-0${lastCypher}`,
                                         email: jsonEvent.email,
-                                        phoneNumberMobile: (jsonEvent.phone as string).includes('+') ? (jsonEvent.phone as string).substring(2) : jsonEvent.phone,
+                                        phoneNumberMobile: (jsonEvent.phone as string).includes('+') ? `0${(jsonEvent.phone as string).substring(3)}` : jsonEvent.phone,
                                     })
                                 });
 
