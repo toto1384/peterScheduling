@@ -158,11 +158,14 @@ export default async function handler(req: NextApiRequest, res: any) {
 
                             console.log("🚀 ~ handler ~ clients:", clients)
 
+                            const lastCypher = Number((jsonEvent.phone as string)?.at(jsonEvent.phone?.length - 1))
+                            const phoneNumber = (jsonEvent.phone as string).includes('+') ? `0${(jsonEvent.phone as string).substring(3)}` : jsonEvent.phone
+
                             const foundClient = clients.find((i: any) =>
                                 (jsonEvent.firstName as string).trim() == (i.firstName as string).trim() &&
                                 (jsonEvent.lastName as string).trim() == (i.lastName as string).trim() &&
                                 (jsonEvent.email as string).trim() == (i.email as string).trim() &&
-                                (jsonEvent.phone as string).trim() == (i.phoneNumberMobile as string).trim()
+                                (phoneNumber as string).trim() == (i.phoneNumberMobile as string).trim()
                             )
 
                             if (foundClient) {
@@ -170,7 +173,7 @@ export default async function handler(req: NextApiRequest, res: any) {
                                 corePlusClientId = foundClient.clientId
                                 // the sync was made and it's gonna persist forever
                             } else {
-                                const lastCypher = Number((jsonEvent.phone as string)?.at(jsonEvent.phone?.length - 1))
+
 
                                 console.log("Not Found Client in Coreplus with the same name, creating one")
                                 const clientUrlPost = 'https://sandbox.coreplus.com.au/API/Core/v2.1/client/'
@@ -181,7 +184,7 @@ export default async function handler(req: NextApiRequest, res: any) {
                                         "lastName": jsonEvent.lastName,
                                         "dateOfBirth": isNaN(lastCypher) ? "2000-01-01" : `2000-01-0${lastCypher}`,
                                         email: jsonEvent.email,
-                                        phoneNumberMobile: (jsonEvent.phone as string).includes('+') ? `0${(jsonEvent.phone as string).substring(3)}` : jsonEvent.phone,
+                                        phoneNumberMobile: phoneNumber,
                                     })
                                 });
 
