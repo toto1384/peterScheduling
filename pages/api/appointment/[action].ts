@@ -280,10 +280,10 @@ export default async function handler(req: NextApiRequest, res: any) {
                             "locationId": corePlusLocationId, // from the calendar.location
                             "appointmentTypeId": corePlusAppointmentTypeId,
                             "notes": `Price: ${jsonEvent.price} • Paid: ${jsonEvent.paid} \nDate Created: ${jsonEvent.dateCreated} \nNotes: ${jsonEvent.notes}`,
-                            "notifyPractitioner": true,
+                            "notifyPractitioner": "true",
                             "appointmentReminder": {
-                                "isEmailReminderRequired": false,
-                                "isSmsReminderRequired": true
+                                "isEmailReminderRequired": "false",
+                                "isSmsReminderRequired": "true"
                             },
                             "clients": [
                                 {
