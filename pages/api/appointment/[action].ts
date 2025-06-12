@@ -293,7 +293,6 @@ export default async function handler(req: NextApiRequest, res: any) {
                         }
 
 
-
                         console.log('json add', jsonAdd)
 
                         const responseAppointmentAdd = await fetch(endPoint, {
