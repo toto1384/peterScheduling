@@ -145,7 +145,7 @@ export default async function handler(req: NextApiRequest, res: any) {
                         try {
                             // if (!clientSaveActionModel?.[0]) {
 
-                            const clientUrl = `https://sandbox.coreplus.com.au/API/Core/v2.1/client?Field=phonenumberhome&Field=email&email?${encodeURI(jsonEvent.email)}`
+                            const clientUrl = `https://sandbox.coreplus.com.au/API/Core/v2.1/client?Field=phonenumbermobile&Field=email&email?${encodeURI(jsonEvent.email)}`
                             const clientResult = await fetch(clientUrl, {
                                 headers: {
                                     'Authorization': 'JwToken ' + formJWTCorePlus({ method: "GET", endPoint: clientUrl }),
@@ -162,7 +162,7 @@ export default async function handler(req: NextApiRequest, res: any) {
                                 (jsonEvent.firstName as string).trim() == (i.firstName as string).trim() &&
                                 (jsonEvent.lastName as string).trim() == (i.lastName as string).trim() &&
                                 (jsonEvent.email as string).trim() == (i.email as string).trim() &&
-                                (jsonEvent.phone as string).trim() == (i.phoneNumberHome as string).trim()
+                                (jsonEvent.phone as string).trim() == (i.phoneNumberMobile as string).trim()
                             )
 
                             if (foundClient) {
@@ -181,7 +181,6 @@ export default async function handler(req: NextApiRequest, res: any) {
                                         "lastName": jsonEvent.lastName,
                                         "dateOfBirth": isNaN(lastCypher) ? "2000-01-01" : `2000-01-0${lastCypher}`,
                                         email: jsonEvent.email,
-                                        phoneNumberHome: jsonEvent.phone,
                                         phoneNumberMobile: jsonEvent.phone,
                                     })
                                 });
@@ -553,6 +552,8 @@ async function throwSaveError(
 
     return errMessage;
 }
+
+
 
 
 
