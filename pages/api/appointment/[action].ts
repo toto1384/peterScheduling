@@ -153,6 +153,7 @@ export default async function handler(req: NextApiRequest, res: any) {
                                 },
                                 method: 'GET'
                             })
+                            console.log("🚀 ~ handler ~ clientResult:", await clientResult.text())
 
                             const { clients } = await clientResult.json()
 
