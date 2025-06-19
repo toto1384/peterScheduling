@@ -38,7 +38,7 @@ export default function Applied({ saveActions, webhooks }: InferGetServerSidePro
             {i.status == "Failure" && <div className="mt-2">{i.errorMessage}</div>}
         </div>)}
 
-        <button className="px-4 py-1.5 rounded-full bg-blue-200 cursor-pointer" onClick={() => router.push('/?limit=200')}>See 200 logs</button>
+        {!router.query.limit && <button className="px-4 py-1.5 rounded-full bg-blue-200 cursor-pointer" onClick={() => router.push('/?limit=200')}>See 200 logs</button>}
 
         <h2 className="text-2xl">Available Webhooks</h2>
         {webhooks.map((i: any) => <div key={i._id} className="bg-gray-50 rounded p-3">
