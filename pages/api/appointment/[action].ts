@@ -177,16 +177,20 @@ export default async function handler(req: NextApiRequest, res: any) {
 
 
                                 console.log("Not Found Client in Coreplus with the same name, creating one")
-                                const clientUrlPost = 'https://sandbox.coreplus.com.au/API/Core/v2.1/client/'
+                                const clientUrlPost = 'https://sandbox.coreplus.com.au/API/Core/v2.1/client/';
+
+                                const clientBody = {
+                                    "firstName": jsonEvent.firstName,
+                                    "lastName": jsonEvent.lastName,
+                                    "dateOfBirth": isNaN(lastCypher) ? "2000-01-01" : `2000-01-0${lastCypher}`,
+                                    email: jsonEvent.email,
+                                    phoneNumberMobile: phoneNumber,
+                                };
+
+                                console.log("🚀 ~ handler ~ clientBody:", clientBody)
                                 const responseCreateClientCP = await fetch(clientUrlPost, {
                                     method: "POST", headers: { 'Authorization': 'JwToken ' + formJWTCorePlus({ method: "POST", endPoint: clientUrlPost }), 'content-type': 'application/json' },
-                                    body: JSON.stringify({
-                                        "firstName": jsonEvent.firstName,
-                                        "lastName": jsonEvent.lastName,
-                                        "dateOfBirth": isNaN(lastCypher) ? "2000-01-01" : `2000-01-0${lastCypher}`,
-                                        email: jsonEvent.email,
-                                        phoneNumberMobile: phoneNumber,
-                                    })
+                                    body: JSON.stringify(clientBody)
                                 });
 
                                 const jsonCreateCalendarCP = await responseCreateClientCP.json()
